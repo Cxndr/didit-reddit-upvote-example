@@ -1,16 +1,17 @@
 'use client'
 
-import { useEditor, EditorContent } from '@tiptap/react'
+import { BubbleMenu, useEditor, EditorContent } from '@tiptap/react'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
 import Heading from '@tiptap/extension-heading'
 import Bold from '@tiptap/extension-bold'
 import Italic from '@tiptap/extension-italic'
+import Strike from '@tiptap/extension-strike'
 import BlockQuote from '@tiptap/extension-blockquote'
 import CharacterCount from '@tiptap/extension-character-count'
 import Placeholder from '@tiptap/extension-placeholder'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 
 export default function TipTapEditor({content="", placeholder="", onContentChange}) {
@@ -29,10 +30,13 @@ export default function TipTapEditor({content="", placeholder="", onContentChang
       Bold,
       Italic,
       BlockQuote,
+      Strike,
       CharacterCount.configure({ limit: 1000 }),
+      BubbleMenu,
       Placeholder.configure({
         placeholder: `${placeholder}`,
       }),
+      
     ],
     editorProps: {
       attributes: {
@@ -47,5 +51,36 @@ export default function TipTapEditor({content="", placeholder="", onContentChang
     };
   }, [editor]);
 
-  return <EditorContent editor={editor} />
+  return (
+    <>
+      <div className="control-group">
+      </div>
+
+      {editor && 
+        <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+          <div className="bubble-menu">
+            <button
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              className={editor.isActive('bold') ? 'is-active' : ''}
+            >
+              Bold
+            </button>
+            <button
+              onClick={() => editor.chain().focus().toggleItalic().run()}
+              className={editor.isActive('italic') ? 'is-active' : ''}
+            >
+              Italic
+            </button>
+            <button
+              onClick={() => editor.chain().focus().toggleStrike().run()}
+              className={editor.isActive('strike') ? 'is-active' : ''}
+            >
+              Strike
+            </button>
+          </div>
+        </BubbleMenu>
+      }
+      <EditorContent editor={editor} />
+    </>
+  )
 }
